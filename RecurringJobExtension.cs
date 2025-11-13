@@ -1,7 +1,6 @@
 ﻿using System.Text.Json;
 
 namespace Hangfire.RecurringJobs.Extensions;
-
 public static class DynamicRecurringJob
 {
 
