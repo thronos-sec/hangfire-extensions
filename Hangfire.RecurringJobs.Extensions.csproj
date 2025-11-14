@@ -7,7 +7,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>Thronos.HangfireRecurringJobsExtensions</PackageId>
-    <Version>1.0.4</Version>
+    <Version>1.0.5</Version>
     <Authors>Matheus Zauza Maschietto</Authors>
     <Company>Thronos</Company>
     <Description>

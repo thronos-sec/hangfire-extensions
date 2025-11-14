@@ -34,7 +34,7 @@ public static class DynamicRecurringJob
         });
     }
 
-    private static void DynamicExecution(string destination, string stateSerialized)
+    public static void DynamicExecution(string destination, string stateSerialized)
     {
         Action?.Invoke(destination, stateSerialized);
     }
