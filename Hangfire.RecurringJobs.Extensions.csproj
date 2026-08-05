@@ -7,11 +7,11 @@
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>Thronos.HangfireRecurringJobsExtensions</PackageId>
-    <Version>1.0.5</Version>
+    <Version>1.1.0</Version>
     <Authors>Matheus Zauza Maschietto</Authors>
     <Company>Thronos</Company>
     <Description>
-      This package implements an hangfire recurringjob extension that allow you to execute dynamic code in differents projects. 
+      This package implements an hangfire recurringjob and fire-and-forget extension that allow you to execute dynamic code in differents projects. 
       Imagine you throw an recurringjob at application X, and you want that application Y execute that code recurringjob. Hangfire wont let you do it, until now.
     </Description>
     <PackageTags>Hangfire;RecurringJobs;Extensions</PackageTags>
