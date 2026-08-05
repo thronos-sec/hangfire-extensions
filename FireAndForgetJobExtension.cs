@@ -1,15 +1,19 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
+using System.Threading.Tasks;
 
-namespace Hangfire.RecurringJobs.Extensions;
+namespace Hangfire.FireAndForget.Extensions;
 
 /// <summary>
-/// Prover suporte para agendamento e execução dinâmica de jobs recorrentes no Hangfire.
-/// Permite serializar dados de estado em JSON e disparar rotinas registradas dinamicamente.
+/// Prover suporte para enfileiramento e execução dinâmica de jobs do tipo Fire-and-Forget no Hangfire.
+/// Permite serializar dados de estado em JSON e enfileirar rotinas para execução imediata em segundo plano.
 /// </summary>
-public static class DynamicRecurringJob
+public class FireAndForgetJobExtension
 {
     /// <summary>
-    /// Delegado responsável por definir a assinatura da ação a ser executada dinamicamente quando o job recorrente for disparado.
+    /// Delegado responsável por definir a assinatura da ação a ser executada dinamicamente quando o job Fire-and-Forget for processado.
     /// </summary>
     /// <param name="destination">Identificador do destino ou rota do serviço/módulo a executar.</param>
     /// <param name="stateSerialized">Estado ou parâmetros da requisição serializados em formato JSON.</param>
@@ -19,7 +23,7 @@ public static class DynamicRecurringJob
     private static TimeZoneInfo? _defaultTimeZone = TimeZoneInfo.Utc;
 
     /// <summary>
-    /// Fuso horário padrão utilizado no agendamento dos jobs recorrentes (padrão é UTC).
+    /// Fuso horário padrão configurado para a extensão (padrão é UTC).
     /// Permite alteração apenas se o valor atual ainda for UTC.
     /// </summary>
     public static TimeZoneInfo? DefaultTimeZone { 
@@ -36,7 +40,7 @@ public static class DynamicRecurringJob
     /// Configura o manipulador de ação dinâmico que será invocado quando os jobs forem executados.
     /// O registro é realizado uma única vez (não sobrescreve se já estiver definido).
     /// </summary>
-    /// <param name="action">Ação a ser executada no disparo dos jobs.</param>
+    /// <param name="action">Ação a ser executada no processamento dos jobs.</param>
     public static void SetAction(DynamicAction action)
     {
         if (Action == null)
@@ -46,25 +50,20 @@ public static class DynamicRecurringJob
     }
 
     /// <summary>
-    /// Adiciona ou atualiza um job recorrente no Hangfire, serializando o objeto de estado em JSON.
+    /// Enfileira um job do tipo Fire-and-Forget no Hangfire, serializando o objeto de estado em JSON.
     /// </summary>
-    /// <param name="recurringJobId">Identificador único do job recorrente.</param>
-    /// <param name="cronExpression">Expressão CRON para o agendamento.</param>
     /// <param name="destination">Destino ou identificador da rota/ação a ser executada.</param>
     /// <param name="state">Objeto de estado a ser serializado em JSON e passado para a execução.</param>
     /// <param name="serializerOptions">Opções de serialização JSON (opcional).</param>
-    /// <param name="timeZone">Fuso horário específico para este job (se nulo, utiliza o <see cref="DefaultTimeZone"/>).</param>
-    public static void AddOrUpdate(string recurringJobId, string cronExpression, string destination, object? state = null, JsonSerializerOptions? serializerOptions = null, TimeZoneInfo? timeZone = null)
+    /// <param name="timeZone">Fuso horário específico (opcional).</param>
+    public static void Enqueue(string destination, object? state = null, JsonSerializerOptions? serializerOptions = null, TimeZoneInfo? timeZone = null)
     {
         string objectJson = JsonSerializer.Serialize(state, serializerOptions);
-        RecurringJob.AddOrUpdate(recurringJobId, () => DynamicExecution(destination, objectJson), cronExpression, new RecurringJobOptions()
-        {
-            TimeZone = timeZone ?? DefaultTimeZone
-        });
+        BackgroundJob.Enqueue(() => DynamicExecution(destination, objectJson));
     }
 
     /// <summary>
-    /// Método invocado internamente pelo Hangfire no momento da execução do job recorrente.
+    /// Método invocado internamente pelo Hangfire no momento da execução do job enfileirado.
     /// Responsável por invocar o delegado <see cref="Action"/> previamente configurado.
     /// </summary>
     /// <param name="destination">Identificador do destino da ação.</param>
