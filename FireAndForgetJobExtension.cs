@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace Hangfire.FireAndForget.Extensions;
 
@@ -10,7 +6,7 @@ namespace Hangfire.FireAndForget.Extensions;
 /// Prover suporte para enfileiramento e execução dinâmica de jobs do tipo Fire-and-Forget no Hangfire.
 /// Permite serializar dados de estado em JSON e enfileirar rotinas para execução imediata em segundo plano.
 /// </summary>
-public class FireAndForgetJobExtension
+public static class FireAndForgetJobExtension
 {
     /// <summary>
     /// Delegado responsável por definir a assinatura da ação a ser executada dinamicamente quando o job Fire-and-Forget for processado.
